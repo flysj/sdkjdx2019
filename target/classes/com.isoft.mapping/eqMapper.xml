@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.isoft.mapping.eqMapper">
+    <select id="findeqCount" resultType="map">
+        SELECT count(*) as `count` from tb_pro;
+    </select>
+
+    <select id="findAlleq" parameterType="map" resultType="map">
+        select * from tb_pro limit #{page},#{pageSize}
+    </select>
+    <select id="findproeq" parameterType="map" resultType="map">
+        select * from tb_pro WHERE usetime>6 limit #{page},#{pageSize}
+    </select>
+    <update id="eqInfoById" parameterType="int">
+        UPDATE tb_pro
+        SET tb_pro.protime=tb_pro.lasttime,tb_pro.lasttime=now(),tb_pro.usetime=0 ,tb_pro.log=tb_pro.log+1 WHERE tb_pro.id=#{id}
+
+    </update>
+    <select id="findAlllog" parameterType="map" resultType="map">
+        select * from tb_pro where log>0 limit #{page},#{pageSize}
+    </select>
+    <update id="dellogById" parameterType="int">
+        UPDATE tb_pro
+        SET tb_pro.log=0 WHERE tb_pro.id=#{id}
+    </update>
+
+</mapper>

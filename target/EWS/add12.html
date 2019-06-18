@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="layui3.4/css/layui.css"/>
+    <link rel="stylesheet" href="css/vcode.css"/>
+    <script type="text/javascript" src="jquery3.4.1/jquery-3.4.1.js"></script>
+    <script type="text/javascript" src="layui3.4/layui.all.js"></script>
+    <script type="text/javascript" src="js/vcode.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            createCode(4);
+            $("#checkCode").click(function () {
+                createCode(4);
+            });
+        });
+        function addinfo() {
+            $.ajax({
+                url: "equipment/addinfo.do",
+                data: {
+                    "name": $("#name").val(),
+                    "local": $("#local").val(),
+                   /* "lasttime": $("#lasttime").val(),
+                    "usetime": $("#usetime").val(),*/
+                },
+                method: "post",
+                success: function (result) {//这是回调函数
+                    layer.alert("添加成功！");
+                    window.location.href = "equipmentManager.html";
+                },
+                error: function () {
+                    layer.msg("请求服务器失败!");
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+<div class="layui-form-item" align="center">
+    <label class="layui-form-label">设备名</label>
+    <div class="layui-input-inline">
+        <input type="text" id="name"  name="name" lay-verify="pass" placeholder="请输入设备名" autocomplete="off" class="layui-input">
+    </div>
+</div>
+<div class="layui-form-item" align="center">
+    <label class="layui-form-label">地点</label>
+    <div class="layui-input-inline">
+        <input type="text" id="local" name="local" lay-verify="pass" placeholder="请输入地点" autocomplete="off" class="layui-input">
+    </div>
+</div>
+<!--<div class="layui-form-item" align="center">
+    <label class="layui-form-label">最后一次检修时间</label>
+    <div class="layui-input-inline">
+        <input type="text" id="lasttime" name="lasttime" lay-verify="pass" placeholder="请输入最后一次检修时间" autocomplete="off" class="layui-input">
+    </div>
+</div>
+<div class="layui-form-item" align="center">
+    <label class="layui-form-label">使用时间</label>
+    <div class="layui-input-inline">
+        <input type="text" id="usetime" name="usetime" lay-verify="pass" placeholder="请输入使用时间" autocomplete="off" class="layui-input">
+    </div>
+</div>-->
+<div class="layui-form-item">
+    <a href="javascript:addinfo()" class="layui-btn layui-btn-normal">添加</a>
+    <a href="#" class="layui-btn layui-btn-danger">重置</a>
+</div>
+<table class="layui-table" id="equipmentInfoList" lay-filter="equipmentTable">
+</table>
+</body>
+</html>

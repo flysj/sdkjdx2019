@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户管理</title>
+    <link rel="stylesheet" href="layui3.4/css/layui.css"/>
+    <script type="text/javascript" src="jquery3.4.1/jquery-3.4.1.js"></script>
+    <script type="text/javascript" src="layui3.4/layui.all.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            loadlogData();
+        });
+        
+        function dellogById(id) {
+            layer.confirm("是否真的要删除本记录?", {icon: 3, title: "警告"}, function (index) {
+                layer.closeAll();
+                $.ajax({
+                    url: "eq/dellogById.do",
+                    method: "post",
+                    data: {"id": id},
+                    success: function (result) {
+                        //alert(result);
+                        if (JSON.parse(result) == "success") {
+                            //  $("#userInfoList").reload();
+
+                            layer.msg("删除成功!");
+                            layui.table.reload("logTable");
+                        } else {
+                            layer.msg("删除失败!");
+                        }
+
+                    },
+                    error: function () {
+                        layui.msg("请求服务器失败!");
+                    }
+                });
+
+            });
+        }
+
+        function loadlogData() {
+            var table = layui.table;
+            table.render({
+                toolbar: "#toolbar",
+                elem: "#logList",
+                url: "eq/findAlllog.do",
+                title: "设备日志信息表",
+                id: "logTable",
+                limit: 8,
+                page: true,
+                event: true,
+                size: "md",
+                limits: [10, 20, 50, 100],
+                loading: true,
+                cols: [
+                    [{
+                        field: "id",
+                        title: "ID",
+                        type: "checkbox"
+                    },
+                        {
+                            field: "id",
+                            title: "ID",
+                            type: "numbers"
+                        },
+                        {
+                            field: "name",
+                            title: "用户名",
+                            align: "center"
+                        },
+                        {
+                            field: "local",
+                            title: "地点",
+                            align: "center"
+                        },
+                        {
+                            field: "protime",
+                            title: "生产日期",
+                            align: "center"
+                        },
+                        {
+                            field: "lasttime",
+                            title: "最后一次检修时间",
+                            align: "center"
+                        },
+                        {
+                            field: "usetime",
+                            title: "使用时间",
+                            align: "center"
+                        },
+                        {
+                            field: "log",
+                            title: "检修次数",
+                            align: "center"
+                        },
+                        {
+                            field: "id",
+                            title: "操作",
+                            align: "center",
+                            templet: function (row) {
+                                /* var arr = new Array();
+                                arr[0] = row.id;
+                                arr[1] = row.uname;
+                                arr[2] = row.email;
+                                arr[3] = row.role;*/
+                                var fix = '<a href="javaScript:dellogById(' + row.id + ')"  title="删除">' +
+                                    "<span style='font-size: 25px;color: red' class='layui-icon layui-icon-delete'></span></a>"
+                                return  fix;
+                            }
+                        }
+                    ]
+                ]
+            });
+
+        }
+    </script>
+</head>
+<body>
+<div class="layui-elem-quote">
+    设备日志
+</div>
+
+<table class="layui-table" id="logList">
+</table>
+
+</form>
+</div>
+</body>
+</html>

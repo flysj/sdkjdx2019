@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.isoft.mapping.equipmentMapper">
+    <select id="findAllEquipment" parameterType="map" resultType="map">
+        select * from tb_equipment limit #{page},#{pageSize}
+    </select>
+
+    <select id="findEquipmentCount" resultType="map">
+        SELECT count(*) as `count` from tb_equipment;
+    </select>
+
+    <delete id="deleteEquipmentInfoById" parameterType="int">
+        delete from tb_equipment where id=#{id}
+    </delete>
+
+    <select id="equipmentTotal" resultType="map">
+        select local,
+        count(*) as count
+          from tb_equipment group by local ;
+    </select>
+
+    <select id="equipmentTotal2" resultType="map">
+        select name,
+        count(*) as count
+          from tb_equipment group by name ;
+    </select>
+<select id="findinfo"   parameterType="map" resultType="map">
+    select * from  tb_equipment where  id=#{id}
+</select>
+    <insert id="addinfo" parameterType="map">
+        insert into tb_equipment(id,name,local,protime,lasttime,usetime)
+        values(null,#{name},#{local},now(),now(),null);
+    </insert>
+
+</mapper>

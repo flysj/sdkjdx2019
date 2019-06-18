@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>设备管理</title>
+    <link rel="stylesheet" href="layui3.4/css/layui.css"/>
+    <script type="text/javascript" src="jquery3.4.1/jquery-3.4.1.js"></script>
+    <script type="text/javascript" src="layui3.4/layui.all.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            findByID();
+        });
+        function findByID() {
+            var table = layui.table;
+            var util = layui.util;
+            $.ajax({
+                url: "equipment/findinfo.do",
+                method: "post",
+                data: {"id": sessionStorage.getItem("id")},
+                success: function (result) {
+                    result=JSON.parse(result),
+                     /*   alert(result),*/
+                        table.render({
+                            toolbar: "#toolbar",
+                            elem: "#equipmentInfoList",
+                            title: "设备信息表",
+                            data:result.data,
+                            id: "equipmentInfoTable",
+                            limit: 8,
+                            page: true,
+                            event: true,
+                            size: "md",
+                            limits: [10, 20, 50, 100],
+                            loading: true,
+                            cols: [
+                                [{
+                                    field: "id",
+                                    title: "ID",
+                                    type: "checkbox"
+                                },
+                                    {
+                                        field: "id",
+                                        title: "ID",
+                                        width: 20
+                                    },
+                                    {
+                                        field: "name",
+                                        title: "设备名",
+                                        align: "center",
+                                        width: 100
+                                    },
+                                    {
+                                        field: "local",
+                                        title: "地点",
+                                        align: "center",
+                                        width: 180,
+                                        /*templet: function (row) {
+                                            return util.toDateString(row.r_outTime, "yyyy-MM-dd HH:mm:ss");
+                                        }*/
+                                    },
+                                    {
+                                        field: "protime",
+                                        title: "上一次检修日期",
+                                        align: "center",
+                                        width: 180,
+                                        templet: function (row) {
+                                            return util.toDateString(row.protime, "yyyy-MM-dd");
+                                        }
+                                    },
+
+                                    {
+                                        field: "lasttime",
+                                        title: "最后一次检修日期",
+                                        align: "center",
+                                        width: 180,
+                                        templet: function (row) {
+                                            return util.toDateString(row.lasttime, "yyyy-MM-dd");
+                                        }
+                                    },
+
+                                    {
+                                        field: "usetime",
+                                        title: "使用时间",
+                                        align: "center",
+                                        width: 180,
+                                        /*templet: function (row) {
+                                            return util.toDateString(row.lasttime, "yyyy-MM-dd");
+                                        }*/
+                                    },
+
+                                ]
+                            ]
+                        });
+                },
+                error: function () {
+                    layui.msg("请求服务器失败!");
+                }
+            });
+
+        }
+
+    </script>
+</head>
+<body>
+<div class="layui-elem-quote">
+    设备管理
+</div>
+<script type="text/html" id="toolbar">
+    <button class="layui-btn layui-btn-danger" lay-event="add"><i class="layui-icon">&#xe640</i> 添加设备</button>
+    <a href="javascript:void(0)" class="layui-btn layui-btn-warm" lay-event="delete"><span
+            class="layui-icon layui-icon-delete"></span> 删除设备</a>
+    <input class="layui-input-block" type="text" placeholder="请输入要查询的信息" id="find">
+    <a href="" class="layui-btn layui-btn-warm">
+        <span class="layui-icon layui-icon-search" ></span></a>
+</script>
+<table class="layui-table" id="equipmentInfoList" lay-filter="equipmentTable"></table>
+</body>
+</html>

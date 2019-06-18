@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>设备管理</title>
+    <link rel="stylesheet" href="layui3.4/css/layui.css"/>
+    <script type="text/javascript" src="jquery3.4.1/jquery-3.4.1.js"></script>
+    <script type="text/javascript" src="layui3.4/layui.all.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+           loadEquipmentData();
+        });
+
+        function addequipment() {
+            $("#mainFrame").load("add12.html");
+        }
+        function find() {
+            i=$("#find").val();
+            sessionStorage.setItem("id",i);
+            window.location.href="find12.html";
+        }
+        function openEquipmentInfoEdit(id, name, local,lasttime,usetime) {
+                        sessionStorage.setItem("id",id);
+                        sessionStorage.setItem("name",name);
+                        sessionStorage.setItem("local",local);
+                        sessionStorage.setItem("lasttime",lasttime);
+                        sessionStorage.setItem("usetime",usetime);
+            layer.open({
+                type: 1,
+                title: "修改设备信息",
+                btn: ["确认修改", "取消"],
+                content: $("#editEquipmentInfo").html(),
+                area: ['400px', '350px'],
+                yes: function (index) {
+                    layer.msg("test");
+                },
+                success: function () {
+
+                    layui.use("form",function () {
+                        layui.form.render();
+                    });
+                    $("#name").val(name);
+                    $("#lbl_title").html("修改设备信息");
+                }
+
+            });
+            //给文本框赋值
+
+
+
+
+        }
+
+
+        function deleteEquipmentInfoById(id) {
+            layer.confirm("是否真的要删除本记录?", {icon: 3, title: "警告"}, function (index) {
+                layer.closeAll();
+                $.ajax({
+                    url: "equipment/deleteEquipmentInfoById.do",
+                    method: "post",
+                    data: {"id": id},
+                    success: function (result) {
+                        //alert(result);
+                        if (JSON.parse(result) == "success") {
+                            //  $("#userInfoList").reload();
+
+                            layer.msg("删除成功!");
+                            layui.table.reload("equipmentInfoTable");
+                        } else {
+                            layer.msg("删除失败!");
+                        }
+
+                    },
+                    error: function () {
+                        layui.msg("请求服务器失败!");
+                    }
+                });
+
+            });
+        }
+
+        function loadEquipmentData() {
+            var table = layui.table;
+            var util = layui.util;
+            table.render({
+                toolbar: "#toolbar",
+                elem: "#equipmentInfoList",
+                url: "equipment/findAllEquipment.do",
+                title: "设备信息表",
+                id: "equipmentInfoTable",
+                limit: 8,
+                page: true,
+                event: true,
+                size: "md",
+                limits: [10, 20, 50, 100],
+                loading: true,
+                cols: [
+                    [{
+                        field: "id",
+                        title: "ID",
+                        type: "checkbox"
+                    },
+                        {
+                            field: "id",
+                            title: "ID",
+                            type: "numbers",
+                            edit:true
+                        },
+                        {
+                            field: "name",
+                            title: "设备名",
+                            align: "center",
+                            edit:true
+                        },
+                        {
+                            field: "local",
+                            title: "地点",
+                            align: "center",
+                            edit:true
+                        },
+                        {
+                            field: "protime",
+                            title: "上一次检修日期",
+                            align: "center",
+                            edit:true
+                        },
+                        {
+                            field: "lasttime",
+                            title: "最后一次检修时间",
+                            align: "center",
+                            edit:true
+                        },
+                        {
+                            field: "usetime",
+                            title: "使用时间",
+                            align: "center",
+                            edit:true
+                        },
+
+
+
+                        {
+                            field: "id",
+                            title: "操作",
+                            align: "center",
+                            width: 100,
+                            templet: function (row) {
+                                /* var arr = new Array();
+                                arr[0] = row.id;
+                                arr[1] = row.uname;
+                                arr[2] = row.email;
+                                arr[3] = row.role;*/
+                               /* var edit = '<a href="javascript:openEquipmentInfoEdit(' + row.id + ",'" + row.name + "','" + row.local+' )"   title="修改">' +
+                                    "<span style='font-size: 25px;color:blue' class='layui-icon layui-icon-util'></span></a>"*/
+                                var edit = '<a href="javascript:openEquipmentInfoEdit(' + row.id + ",'" + row.name + "','" + row.local + "','" + row.lasttime+ "','" + row.usetime+'\');"   title="编辑">' +
+                                    "<span style='font-size: 25px;color:blue' class='layui-icon layui-icon-util'></span></a>"
+
+                                var del = '<a href="javaScript:deleteEquipmentInfoById(' + row.id + ')"  title="删除">' +
+                                    "<span style='font-size: 25px;color: red' class='layui-icon layui-icon-delete'></span></a>"
+                                return edit + "|" + del;
+                            }
+                        }
+                    ]
+                ]
+            });
+            layui.table.on("toolbar(equipmentTable)", function (rs) {
+                var event = rs.event;
+                if (event == "add") {
+                    layer.open({
+                        type: 1,
+                        title: "添加设备信息",
+                        btn: ["确认添加", "取消"],
+                        content: $("#editEquipmentInfo").html(),
+                        area: ['400px', '350px'],
+                        yes: function (index) {
+                            layer.msg("test");
+                        },
+                        success:function () {
+                            $("#lbl_title").html("添加设备信息");
+                            layui.use("form",function () {
+                                layui.form.render();
+                            })
+                        }
+                    });
+                }
+                if (event == "delete") {
+                    var list = layui.table.checkStatus("equipmentInfoTable").data;
+                    if (list.length == 0) {
+                        layer.msg("请选择一条数据");
+                    }else
+                    {
+                        layer.confirm("是否删除选中的数据?",{btn:["确定","取消"]},function () {
+                            layer.closeAll();
+                            var arr=new Array();
+                            $.each(list,function (index,row) {
+                                arr[index]=row.id;
+                            });
+                            $.ajax({
+                                url:"equipment/deleteEquipmentInfoById.do",
+                                data:{"id":arr.join(",").toString()},
+                                method:"post",
+                                success:function (result) {
+                                    if(JSON.parse(result) == "success"){
+                                        layer.msg("删除成功！");
+                                        layui.table.reload("equipmentInfoTable");
+                                    }
+                                    else
+                                        layer.msg("删除失败！");
+
+                                },
+                                error:function () {
+                                    layer.msg("请求服务器失败?");
+                                }
+                            });
+                        })
+                    }
+                }
+            });
+
+        }
+    </script>
+</head>
+<body>
+<div class="layui-elem-quote">
+    设备管理功能
+</div>
+<script type="text/html" id="toolbar">
+    <!--<button class="layui-btn layui-btn-danger" lay-event="add"><i class="layui-icon">&#xe640</i> 添加设备</button>-->
+    <a href="javascript:addequipment();" class="layui-btn layui-btn-warm"><span
+            class="layui-icon"></span> 添加设备</a>
+    <a href="javascript:void(0)" class="layui-btn layui-btn-warm" lay-event="delete"><span
+            class="layui-icon layui-icon-delete"></span> 删除设备</a>
+    <input  class="layui-input-block" type="text" id = "find" placeholder="请输入要查询的信息">
+    <a href="javascript:find()" class="layui-btn layui-btn-warm">
+        <span class="layui-icon layui-icon-search"></span></a>
+</script>
+<table class="layui-table" id="equipmentInfoList" lay-filter="equipmentTable">
+</table>
+<div align="center" id="editEquipmentInfo" style="display: none;width: 300px">
+    <br>
+    <center>
+        <h2 id="lbl_title">修改设备信息</h2>
+    </center>
+    <hr>
+    <form class="layui-form" id="form1">
+        <input type="hidden" id="id">
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">设备名</label>
+            <div class="layui-input-inline">
+                <input type="text" id="name" name="name" lay-verify="name" autocomplete="off"
+                       placeholder="请输入设备名" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">地点</label>
+            <div class="layui-input-inline">
+                <input type="text" id="local" name="local" lay-verify="local" autocomplete="off"
+                       placeholder="请输入地点" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">最后一次检修时间</label>
+            <div class="layui-input-inline">
+                <input type="text" id="lasttime" name="lasttime lay-verify=lasttime" autocomplete="off"
+                       placeholder="请输入检修时间" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">使用时间</label>
+            <div class="layui-input-inline">
+                <input type="text" id="usetime" name="usetime lay-verify=usetime" autocomplete="off"
+                       placeholder="请输入使用时间" class="layui-input">
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+</html>

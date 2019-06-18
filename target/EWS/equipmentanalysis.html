@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="layui3.4/css/layui.css"/>
+    <script type="text/javascript" src="jquery3.4.1/jquery-3.4.1.js"></script>
+    <script type="text/javascript" src="layui3.4/layui.all.js"></script>
+    <script type="text/javascript" src="echarts/echarts.min.js"></script>
+    <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            bar();
+            equip();
+
+        });
+        function bar() {
+            $.ajax({
+                url: "equipment/equipmentTotal.do",
+                success: function (data) {
+                    var result = JSON.parse(data);
+                    // alert(result)
+                    var mychart = echarts.init(document.getElementById("bar"));
+                    var option = {
+                        title: {
+                            text: '所属科室分析'
+                        },
+                        tooltip: {},
+                        legend: {
+                            data: ['科室']
+                        },
+                        toolbox: {
+                            show : true,
+                            feature : {
+                                mark : {show: true},
+                                dataView : {show: true, readOnly: false},
+                                magicType : {show: true, type: ['line', 'bar']},
+                                restore : {show: true},
+                                saveAsImage : {show: true}
+                            }
+                        },
+                        xAxis: {
+                            data: result.localList
+                        },
+                        yAxis: {},
+                        series: [{
+                            name: '数量',
+                            type: 'line',
+                            data: result.countList
+                        }]
+                    };
+                    mychart.setOption(option);
+                },
+                error:function () {
+                    layer.msg("请求服务器失败!");
+                }
+            });
+
+        }
+        function equip() {
+            $.ajax({
+                url: "equipment/equipmentTotal2.do",
+                success: function (data) {
+                    var result = JSON.parse(data);
+                    // alert(result)
+                    var mychart1 = echarts.init(document.getElementById("equip"));
+                    var option1 = {
+                        title: {
+                            text: '设备类型分析'
+                        },
+                        tooltip: {},
+                        legend: {
+                            data: ['设备']
+                        },
+                        toolbox: {
+                            show : true,
+                            feature : {
+                                mark : {show: true},
+                                dataView : {show: true, readOnly: false},
+                                magicType : {show: true, type: ['line', 'bar']},
+                                restore : {show: true},
+                                saveAsImage : {show: true}
+                            }
+                        },
+                        xAxis: {
+                            data: result.nameList
+                        },
+                        yAxis: {},
+                        series: [{
+                            name: '数量',
+                            type: 'bar',
+                            data: result.countList
+                        }]
+                    };
+                    mychart1.setOption(option1);
+                },
+                error:function () {
+                    layer.msg("请求服务器失败!");
+                }
+            });
+
+        }
+    </script>
+</head>
+<body>
+<div class="row">
+    <div class="layui-col-xs6">
+        <div class="layui-card">
+            <div class="layui-card-header">
+                所属科室分析-折线图
+            </div>
+            <div class="layui-card-body" id="bar" style="height: 400px;width: 100%">
+
+            </div>
+        </div>
+    </div>
+    <div class="layui-col-xs6">
+        <div class="layui-card">
+            <div class="layui-card-header">
+                设备类型分析-柱状图
+            </div>
+            <div class="layui-card-body" id="equip" style="height: 400px;width: 100%">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+</div>
+</body>
+</html>
